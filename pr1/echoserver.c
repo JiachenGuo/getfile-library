@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
         
         /* get the connected socket */
         hSocket=accept(hServerSocket,(struct sockaddr*)&client_addr,(socklen_t *)&nAddressSize);
-
+		bzero(buffer, 16);
 	   /* number returned by read() and write() is the number of bytes
         ** read or written, with -1 being that an error occured
         ** write what we received back to the server */
