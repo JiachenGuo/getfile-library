@@ -1,4 +1,4 @@
-include <unistd.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
     }
 
     /* Socket Code Here */
-    int hSocket;                 /* handle to socket */
+    int hSocket, n;                 /* handle to socket */
     struct hostent* pHostInfo;   /* holds info about a machine */
     struct sockaddr_in Address;  /* Internet socket address stuct */
     char buffer[16];
@@ -91,27 +91,32 @@ int main(int argc, char **argv)
     hSocket=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
     if(hSocket == SOCKET_ERROR)
     {
-        exit(0);
+        exit(1);
     }
      /* get IP address from name */
     pHostInfo=gethostbyname(strHostName);
     if (pHostInfo == NULL) {
-        exit(0);
+        exit(1);
     }
-    memcpy(&nHostAddress,pHostInfo->h_addr,pHostInfo->h_length);
+	bzero((char *)&Address, sizeof(Address));
+    //memcpy(&nHostAddress,pHostInfo->h_addr,pHostInfo->h_length);
     Address.sin_family=AF_INET;
+	bcopy((char *)pHostInfo->h_addr,
+		(char *)&Address.sin_addr.s_addr,
+		pHostInfo->h_length);
     Address.sin_port = htons(portno);
 
     if (connect(hSocket, (struct sockaddr *) &Address, sizeof(Address)) == SOCKET_ERROR) {
-        exit(0);
+        exit(1);
 	}
     n = write(hSocket, message, strlen(message));
     if (n == SOCKET_ERROR) {
-        exit(0);
+        exit(1);
 	}
+	bzero(buffer, 16);
     n = read(hSocket, message, strlen(message));
     if (n == SOCKET_ERROR) {
-        exit(0);
+        exit(1);
 	}
     printf("%s", buffer);
 
